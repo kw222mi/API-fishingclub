@@ -6,6 +6,7 @@
  */
 
 // import createError from 'http-errors'
+import { Catch } from '../models/catch.js'
 
 /**
  * Encapsulates a controller.
@@ -14,9 +15,9 @@ export class FishingClubController {
   /**
    * Validate indata.
    *
-   * @param req
-   * @param res
-   * @param next
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
    */
   validateIndata (req, res, next) {
     console.log('not implemented')
@@ -25,11 +26,11 @@ export class FishingClubController {
   /**
    * Get a user.
    *
-   * @param req
-   * @param res
-   * @param next
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
    */
-  getUser (req, res, next) {
+  getCatch (req, res, next) {
     try {
       res.setHeader('Content-Type', 'application/json')
       res.json({ username: 'Flavio' })
@@ -41,11 +42,58 @@ export class FishingClubController {
   /**
    * Create a new user.
    *
-   * @param req
-   * @param res
-   * @param next
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
    */
-  createUser (req, res, next) {
-    res.send('Received a POST HTTP method')
+  async createCatch (req, res, next) {
+    try {
+      const newCatch = new Catch({
+        memberId: req.body.memberId,
+        memberName: req.body.memberName,
+        lakeName: req.body.lakeName,
+        cityName: req.body.cityName,
+        species: req.body.species,
+        coordinates: req.body.coordinates,
+        weight: req.body.weight,
+        length: req.body.length,
+        image: req.body.image
+      })
+      await newCatch.save()
+      console.log('saved' + newCatch)
+      console.log(' catch id ' + newCatch._id)
+      res.setHeader('Content-Type', 'application/json',
+        'Location', `http://localhost:8080/fishing-club/catch${newCatch._id}`)
+
+      res
+        .status(201)
+        .json(newCatch)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * Change a catch document.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  changeCatch (req, res, next) {
+    res.send(
+        `PUT HTTP method on catch/${req.params.id} resource`)
+  }
+
+  /**
+   * Delete a cattch document.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  deleteCatch (req, res, next) {
+    res.send(
+        `DELETE HTTP method on catch/${req.params.id} resource`)
   }
 }

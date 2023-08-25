@@ -6,10 +6,10 @@
  */
 
 import express from 'express'
-import { router as fishingClubRouter } from './fishingClub-router.js'
+import { router as fishingClubRouter } from './fishingClub/fishingClub-router.js'
 
 export const router = express.Router()
 
-router.get('/', (req, res) => res.json({ message: 'Welcome to the resource-service!' }))
+router.get('/', (req, res) => res.json({ message: 'Welcome!' }))
 
-router.use('/fishingClub', fishingClubRouter)
+router.use('/fishing-club', fishingClubRouter)

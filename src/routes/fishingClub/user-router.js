@@ -6,9 +6,9 @@
  */
 
 import express from 'express'
-import jwt from 'jsonwebtoken'
-import createError from 'http-errors'
-import { FishingClubController } from '../controllers/fishingClub-controller.js'
+// import jwt from 'jsonwebtoken'
+// import createError from 'http-errors'
+import { FishingClubController } from '../../controllers/fishingClub-controller.js'
 
 export const router = express.Router()
 
@@ -25,6 +25,8 @@ const controller = new FishingClubController()
  * @param {object} res - Express response object.
  * @param {Function} next - Express next middleware function.
  */
+
+/*
 const authenticateJWT = (req, res, next) => {
   try {
     const [authenticationScheme, token] = req.headers.authorization?.split(' ')
@@ -53,12 +55,12 @@ const authenticateJWT = (req, res, next) => {
     next(error)
   }
 }
+*/
 
 // ------------------------------------------------------------------------------
 //  Routes
 // ------------------------------------------------------------------------------
 
-// GET user
 /*
 router.get('/user',
   authenticateJWT,
@@ -66,13 +68,22 @@ router.get('/user',
 )
 */
 
-router.get('/user',
+// GET user
+router.get('/',
   (req, res, next) => controller.getUser(req, res, next)
 )
 
 // POST user
-router.post('/user',
+router.post('/',
   // authenticateJWT,
   // (req, res, next) => controller.validateIndata(req, res, next),
   (req, res, next) => controller.createUser(req, res, next, req.user)
+)
+
+router.put('/:id',
+  (req, res, next) => controller.changeUser(req, res, next, req.user)
+)
+
+router.delete('/:id',
+  (req, res, next) => controller.deleteUser(req, res, next, req.user)
 )

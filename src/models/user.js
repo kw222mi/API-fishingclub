@@ -1,5 +1,5 @@
 /**
- * Mongoose model Resource.
+ * Mongoose model User.
  *
  * @author Therese Weidenstedt
  * @version 1.0.0
@@ -8,40 +8,24 @@
 import mongoose from 'mongoose'
 
 // Create a schema.
-const schema = new mongoose.Schema({
-  userId: {
+const userSchema = new mongoose.Schema({
+  firstName: {
     type: String,
-    required: true,
-    trim: true,
-    minlength: 1
-  },
-  firstname: {
-    type: String,
-    required: [true, 'Firstname is required.'],
-    maxLength: [256, 'The firstnam must be of maximum length 256 characters.'],
+    maxLength: [256, 'The firstName must be of maximum length 256 characters.'],
     trim: true,
     minlength: [1, 'The firstname must be of minimum length 1 characters.']
   },
 
-  lastname: {
+  lastName: {
     type: String,
-    required: [true, 'lastname is required.'],
-    maxLength: [256, 'The lastname must be of maximum length 256 characters.'],
+    maxLength: [256, 'The lastName must be of maximum length 256 characters.'],
     trim: true,
-    minlength: [1, 'The lastname must be of minimum length 1 characters.']
+    minlength: [1, 'The lastName must be of minimum length 1 characters.']
   },
-  adress: {
-    type: String,
-    trim: true
-  },
-  telephoneNumber: {
+  email: {
     type: Number,
-    trim: true
-  },
-  mail: {
-    type: String,
-    required: [true, 'mail is required.'],
-    maxLength: [256, 'The mail must be of maximum length 256 characters.']
+    unique: true,
+    required: true
   }
 }, {
   timestamps: true,
@@ -60,9 +44,13 @@ const schema = new mongoose.Schema({
   }
 })
 
-schema.virtual('id').get(function () {
+userSchema.virtual('id').get(function () {
   return this._id.toHexString()
 })
 
+userSchema.pre('remove', function (next) {
+  this.model('Catch').deleteMany({ user: this._id }, next)
+})
+
 // Create a model using the schema.
-export const User = mongoose.model('User', schema)
+export const Catch = mongoose.model('Catch', userSchema)
