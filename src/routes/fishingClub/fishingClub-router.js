@@ -6,12 +6,12 @@
  */
 
 import express from 'express'
-import { router as userRouter } from './user-router.js'
+import { router as memberRouter } from './member-router.js'
 import { router as catchRouter } from './catch-router.js'
 
 export const router = express.Router()
 
 router.get('/', (req, res) => res.json({ message: 'Welcome to the fishing club!' }))
 
-router.use('/user', userRouter)
+router.use('/member', memberRouter)
 router.use('/catch', catchRouter)

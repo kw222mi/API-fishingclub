@@ -8,11 +8,11 @@
 import express from 'express'
 // import jwt from 'jsonwebtoken'
 // import createError from 'http-errors'
-import { FishingClubController } from '../../controllers/fishingClub-controller.js'
+import { MemberController } from '../../controllers/member-controller.js'
 
 export const router = express.Router()
 
-const controller = new FishingClubController()
+const controller = new MemberController()
 
 /**
  * Authenticates requests.
@@ -68,22 +68,22 @@ router.get('/user',
 )
 */
 
-// GET user
+// GET member
 router.get('/',
-  (req, res, next) => controller.getUser(req, res, next)
+  (req, res, next) => controller.getMember(req, res, next)
 )
 
-// POST user
+// POST member
 router.post('/',
   // authenticateJWT,
   // (req, res, next) => controller.validateIndata(req, res, next),
-  (req, res, next) => controller.createUser(req, res, next, req.user)
+  (req, res, next) => controller.createMember(req, res, next, req.user)
 )
 
 router.put('/:id',
-  (req, res, next) => controller.changeUser(req, res, next, req.user)
+  (req, res, next) => controller.changeMember(req, res, next, req.user)
 )
 
 router.delete('/:id',
-  (req, res, next) => controller.deleteUser(req, res, next, req.user)
+  (req, res, next) => controller.deleteMember(req, res, next, req.user)
 )

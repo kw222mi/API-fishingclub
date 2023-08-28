@@ -1,5 +1,5 @@
 /**
- * Mongoose model User.
+ * Mongoose model Member.
  *
  * @author Therese Weidenstedt
  * @version 1.0.0
@@ -8,7 +8,7 @@
 import mongoose from 'mongoose'
 
 // Create a schema.
-const userSchema = new mongoose.Schema({
+const memberSchema = new mongoose.Schema({
   firstName: {
     type: String,
     maxLength: [256, 'The firstName must be of maximum length 256 characters.'],
@@ -44,13 +44,13 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-userSchema.virtual('id').get(function () {
+memberSchema.virtual('id').get(function () {
   return this._id.toHexString()
 })
 
-userSchema.pre('remove', function (next) {
-  this.model('Catch').deleteMany({ user: this._id }, next)
+memberSchema.pre('remove', function (next) {
+  this.model('Catch').deleteMany({ member: this._id }, next)
 })
 
 // Create a model using the schema.
-export const Catch = mongoose.model('Catch', userSchema)
+export const Member = mongoose.model('Member', memberSchema)

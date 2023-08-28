@@ -8,11 +8,11 @@
 import express from 'express'
 // import jwt from 'jsonwebtoken'
 // import createError from 'http-errors'
-import { FishingClubController } from '../../controllers/fishingClub-controller.js'
+import { CatchController } from '../../controllers/catch-controller.js'
 
 export const router = express.Router()
 
-const controller = new FishingClubController()
+const controller = new CatchController()
 
 /**
  * Authenticates requests.
@@ -71,17 +71,22 @@ router.get('/',
   (req, res, next) => controller.getCatch(req, res, next)
 )
 
+// GET catch by id
+router.get('/:id',
+  (req, res, next) => controller.getCatchById(req, res, next)
+)
+
 // POST catch
 router.post('/',
   // authenticateJWT,
   // (req, res, next) => controller.validateIndata(req, res, next),
-  (req, res, next) => controller.createCatch(req, res, next, req.user)
+  (req, res, next) => controller.createCatch(req, res, next)
 )
 
 router.put('/:id',
-  (req, res, next) => controller.changeCatch(req, res, next, req.user)
+  (req, res, next) => controller.changeCatch(req, res, next)
 )
 
 router.delete('/:id',
-  (req, res, next) => controller.deleteCatch(req, res, next, req.user)
+  (req, res, next) => controller.deleteCatch(req, res, next)
 )

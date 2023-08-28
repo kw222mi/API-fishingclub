@@ -9,9 +9,9 @@ import mongoose from 'mongoose'
 
 // Create a schema.
 const schema = new mongoose.Schema({
-  user: {
+  member: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'Member'
   },
   lakeName: {
     type: String,
