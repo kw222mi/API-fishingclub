@@ -1,5 +1,5 @@
 /**
- * Mongoose model Member.
+ * Mongoose model User.
  *
  * @author Therese Weidenstedt
  * @version 1.0.0
@@ -8,23 +8,16 @@
 import mongoose from 'mongoose'
 
 // Create a schema.
-const memberSchema = new mongoose.Schema({
-  firstName: {
+const userSchema = new mongoose.Schema({
+  eventName: {
     type: String,
-    maxLength: [256, 'The firstName must be of maximum length 256 characters.'],
     trim: true,
-    minlength: [1, 'The firstname must be of minimum length 1 characters.']
+    required: true
   },
 
-  lastName: {
+  endpointUrl: {
     type: String,
-    maxLength: [256, 'The lastName must be of maximum length 256 characters.'],
     trim: true,
-    minlength: [1, 'The lastName must be of minimum length 1 characters.']
-  },
-  email: {
-    type: String,
-    unique: true,
     required: true
   }
 }, {
@@ -44,13 +37,9 @@ const memberSchema = new mongoose.Schema({
   }
 })
 
-memberSchema.virtual('id').get(function () {
+userSchema.virtual('id').get(function () {
   return this._id.toHexString()
 })
 
-memberSchema.pre('remove', function (next) {
-  this.model('Catch').deleteMany({ member: this._id }, next)
-})
-
 // Create a model using the schema.
-export const Member = mongoose.model('Member', memberSchema)
+export const User = mongoose.model('User', userSchema)

@@ -73,6 +73,11 @@ router.get('/',
   (req, res, next) => controller.getMember(req, res, next)
 )
 
+// GET member by id
+router.get('/:id',
+  (req, res, next) => controller.getMemberById(req, res, next)
+)
+
 // POST member
 router.post('/',
   // authenticateJWT,

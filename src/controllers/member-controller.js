@@ -24,16 +24,35 @@ export class MemberController {
   }
 
   /**
+   * Get all members.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async getMember (req, res, next) {
+    try {
+      const members = await Member.find()
+      res.setHeader('Content-Type', 'application/json')
+      res.json(members)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
    * Get a member.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-  getCatch (req, res, next) {
+  async getMemberById (req, res, next) {
     try {
+      const member = await Member.findById(req.params.id)
       res.setHeader('Content-Type', 'application/json')
-      res.json({ username: 'Flavio' })
+      res.setHeader('Last-Modified', `${member.updatedAt}`)
+      res.json(member)
     } catch (error) {
       next(error)
     }
@@ -46,43 +65,54 @@ export class MemberController {
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-  async createCatch (req, res, next) {
+  async createMember (req, res, next) {
     try {
-      const newCatch = new Member({
-        memberId: req.body.memberId,
-        memberName: req.body.memberName,
-        lakeName: req.body.lakeName,
-        cityName: req.body.cityName,
-        species: req.body.species,
-        coordinates: req.body.coordinates,
-        weight: req.body.weight,
-        length: req.body.length,
-        image: req.body.image
+      const newMember = new Member({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email
       })
-      await newCatch.save()
-      console.log('saved' + newCatch)
-      console.log(' catch id ' + newCatch._id)
-      res.setHeader('Content-Type', 'application/json',
-        'Location', `http://localhost:8080/fishing-club/catch${newCatch._id}`)
+      await newMember.save()
+      console.log('saved' + newMember)
+      console.log(' member id ' + newMember._id)
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Location', `http://localhost:8080/fishing-club/member${newMember._id}`)
 
       res
         .status(201)
-        .json(newCatch)
+        .json(newMember)
     } catch (error) {
       next(error)
     }
   }
 
   /**
-   * Change a catch document.
+   * Change a member document.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-  changeCatch (req, res, next) {
-    res.send(
-        `PUT HTTP method on catch/${req.params.id} resource`)
+  async changeMember (req, res, next) {
+    try {
+      const member = await Member.findById(req.params.id)
+      console.log(req.body)
+
+      if (member) {
+        member.firstName = req.body.firstName
+        member.lastName = req.body.lastName
+        member.email = req.body.email
+
+        await member.save()
+        res
+          .status(200)
+          .json(member)
+      } else {
+        console.log('member not found')
+      }
+    } catch (error) {
+
+    }
   }
 
   /**
@@ -92,8 +122,9 @@ export class MemberController {
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-  deleteCatch (req, res, next) {
+  async deleteMember (req, res, next) {
+    await Member.findByIdAndDelete(req.params.id)
     res.send(
-        `DELETE HTTP method on catch/${req.params.id} resource`)
+        `DELETE HTTP method on member/${req.params.id} resource`)
   }
 }
