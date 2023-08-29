@@ -8,6 +8,7 @@
 // import createError from 'http-errors'
 import { Catch } from '../models/catch.js'
 import { User } from '../models/user.js'
+import createHttpError from 'http-errors'
 // bimport axios from 'axios'
 
 /**
@@ -38,7 +39,8 @@ export class CatchController {
       res.setHeader('Content-Type', 'application/json')
       res.json(fishCatches)
     } catch (error) {
-      next(error)
+      const httpError = createHttpError(500, error)
+      next(httpError)
     }
   }
 

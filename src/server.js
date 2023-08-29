@@ -10,6 +10,7 @@ import helmet from 'helmet'
 import logger from 'morgan'
 import { router } from './routes/router.js'
 import { connectDB } from './config/mongoose.js'
+import { errorHandlerMiddleware } from './middleware/error-handler.js'
 
 try {
   await connectDB()
@@ -47,6 +48,8 @@ try {
       .status(err.status)
       .json(err)
   })
+
+  app.use(errorHandlerMiddleware)
 
   // Starts the HTTP server listening for connections.
   app.listen(process.env.PORT, () => {
