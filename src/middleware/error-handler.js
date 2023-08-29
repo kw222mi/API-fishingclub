@@ -1,5 +1,6 @@
 const NODE_ENVIRONMENT = process.env.NODE_ENV || 'development'
 
+// eslint-disable-next-line jsdoc/require-returns
 /**
  * Generic Express error handler middleware.
  *
@@ -54,12 +55,9 @@ export function errorHandlerMiddleware (error, request, response, next) {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation
    */
   response.format({
-    //
-    // Callback to run when `Accept` header contains either
-    // `application/json` or `*/*`, or if it isn't set at all.
-    //
+
     /**
-     *
+     * Callback to run when `Accept` header contains either `application/json` or `/`, or if it isn't set at all.
      */
     'application/json': () => {
       /**
@@ -90,7 +88,7 @@ export function errorHandlerMiddleware (error, request, response, next) {
  * Extract an error stack or error message from an Error object.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
- * @param {Error} error
+ * @param {Error} error - error
  * @returns {string} - String representation of the error object.
  */
 function getErrorMessage (error) {
@@ -114,7 +112,7 @@ function getErrorMessage (error) {
  * Log an error message to stderr.
  *
  * @see https://nodejs.org/dist/latest-v14.x/docs/api/console.html#console_console_error_data_args
- * @param {string} error
+ * @param {string} error - error
  */
 function logErrorMessage (error) {
   console.error(error)
@@ -124,7 +122,7 @@ function logErrorMessage (error) {
  * Determines if an HTTP status code falls in the 4xx or 5xx error ranges.
  *
  * @param {number} statusCode - HTTP status code
- * @returns {boolean}
+ * @returns {boolean} status code 500 or 400
  */
 function isErrorStatusCode (statusCode) {
   return statusCode >= 400 && statusCode < 600
@@ -138,8 +136,8 @@ function isErrorStatusCode (statusCode) {
  *
  * Falls back to a 500 (Internal Server Error) HTTP status code.
  *
- * @param {object} options
- * @param {Error} options.error
+ * @param {object} options - options object
+ * @param {Error} options.error - error
  * @param {object} options.response - Express response object
  * @returns {number} - HTTP status code
  */

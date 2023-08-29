@@ -39,7 +39,8 @@ export class CatchController {
       res.setHeader('Content-Type', 'application/json')
       res.json(fishCatches)
     } catch (error) {
-      const httpError = createHttpError(500, error)
+      console.error('Database error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
       next(httpError)
     }
   }
@@ -50,15 +51,23 @@ export class CatchController {
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
+   * @returns {object} error
    */
   async getCatchById (req, res, next) {
     try {
       const fishCatch = await Catch.findById(req.params.id)
+
+      if (!fishCatch) {
+        const notFoundError = createHttpError(404, 'Fish catch not found')
+        return next(notFoundError)
+      }
       res.setHeader('Content-Type', 'application/json')
       res.setHeader('Last-Modified', `${fishCatch.updatedAt}`)
       res.json(fishCatch)
     } catch (error) {
-      next(error)
+      console.error('Database error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
     }
   }
 
@@ -83,24 +92,26 @@ export class CatchController {
       })
       await newCatch.save()
 
+      /*
+      // Get all users
       const users = await User.find()
-      let webhookUrl = ''
-      for (let i = 0; i < users.length; i++) {
-        if (users[i].eventName === 'newCatch') { webhookUrl = users[i].endpointUrl }
-
-        if (webhookUrl != null && webhookUrl.length > 0) {
-        // webhook response
-        /*
-          const result = await axios.post(webhookUrl, newCatch, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          console.log(result)
-          */
-          console.log(webhookUrl)
+      const webhookUrls = []
+      for (const user of users) {
+        // Get users with newCatch event
+        if (user.eventName === 'newCatch') {
+          webhookUrls.push(user.endpointUrl)
         }
       }
+      // Send to all webhooks in the list
+      for (const webhookUrl of webhookUrls) {
+        const webhookResponse = await axios.post(webhookUrl, newCatch, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        console.log('Webhook response:', webhookResponse.data)
+      }
+      */
 
       console.log('saved' + newCatch)
       res.setHeader('Content-Type', 'application/json')
@@ -110,7 +121,9 @@ export class CatchController {
         .status(201)
         .json(newCatch)
     } catch (error) {
-      next(error)
+      console.error('Error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
     }
   }
 
@@ -120,30 +133,23 @@ export class CatchController {
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
+   * @returns {object} error
    */
   async changeCatch (req, res, next) {
     try {
       const fishCatch = await Catch.findById(req.params.id)
-      console.log(req.body.lakeName)
       console.log(req.body)
-
-      if (fishCatch) {
-        fishCatch.member = req.body.memberId
-        fishCatch.lakeName = req.body.lakeName
-        fishCatch.cityName = req.body.cityName
-        fishCatch.species = req.body.species
-        fishCatch.coordinates = req.body.coordinates
-        fishCatch.weight = req.body.weight
-        fishCatch.length = req.body.length
-        fishCatch.image = req.body.image
-
-        await fishCatch.save()
-        res.send('fishLake updated')
-      } else {
-        console.log('catch not found')
+      if (!fishCatch) {
+        const notFoundError = createHttpError(404, 'Fish catch not found')
+        return next(notFoundError)
       }
+      Object.assign(fishCatch, req.body) // Update the document with data from req.body
+      await fishCatch.save()
+      res.json(fishCatch)
     } catch (error) {
-
+      console.error('Error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
     }
   }
 
@@ -153,11 +159,22 @@ export class CatchController {
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
+   * @returns {object} error
    */
   async deleteCatch (req, res, next) {
-    await Catch.findByIdAndDelete(req.params.id)
-    res.send(
-        `DELETE HTTP method on catch/${req.params.id} resource`)
+    try {
+      const deletedCatch = await Catch.findByIdAndDelete(req.params.id)
+
+      if (!deletedCatch) {
+        const notFoundError = createHttpError(404, 'Fish catch not found')
+        return next(notFoundError)
+      }
+      res.status(204).send() // 204 No Content status if deleted successfully
+    } catch (error) {
+      console.error('Error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
+    }
   }
 
   /**
@@ -182,7 +199,9 @@ export class CatchController {
         .status(201)
         .json(newWebhookEvent)
     } catch (error) {
-      next(error)
+      console.error('Error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
     }
   }
 }
