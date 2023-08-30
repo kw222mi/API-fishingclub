@@ -6,8 +6,8 @@
  */
 
 import express from 'express'
-// import jwt from 'jsonwebtoken'
-// import createError from 'http-errors'
+import jwt from 'jsonwebtoken'
+import createError from 'http-errors'
 import { CatchController } from '../../controllers/catch-controller.js'
 
 export const router = express.Router()
@@ -25,7 +25,6 @@ const controller = new CatchController()
  * @param {object} res - Express response object.
  * @param {Function} next - Express next middleware function.
  */
-/*
 const authenticateJWT = (req, res, next) => {
   try {
     const [authenticationScheme, token] = req.headers.authorization?.split(' ')
@@ -54,20 +53,14 @@ const authenticateJWT = (req, res, next) => {
     next(error)
   }
 }
-*/
 
 // ------------------------------------------------------------------------------
 //  Routes
 // ------------------------------------------------------------------------------
 
-/*
-router.get('/user',
-  authenticateJWT,
-  (req, res, next) => controller.getUser(req, res, next)
-)
-*/
 // GET catch
 router.get('/',
+  authenticateJWT,
   (req, res, next) => controller.getCatch(req, res, next)
 )
 
@@ -78,7 +71,7 @@ router.get('/:id',
 
 // POST catch
 router.post('/',
-  // authenticateJWT,
+  authenticateJWT,
   // (req, res, next) => controller.validateIndata(req, res, next),
   (req, res, next) => controller.createCatch(req, res, next)
 )

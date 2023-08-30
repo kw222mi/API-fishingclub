@@ -204,4 +204,34 @@ export class CatchController {
       next(httpError)
     }
   }
+
+  /**
+   * Returns the links to include in fishCatch response.
+   *
+   * @param {string} fishCatchId - the id of the fishCatch
+   * @param {string} memberId - the id of the user
+   * @returns {Array} links
+   */
+  getFishCatchByIdLinks = (fishCatchId, memberId) => {
+    return [
+      {
+        _links: {
+          self: {
+            href: `/catch/${fishCatchId}`
+          },
+          update: {
+            href: `/catch/${fishCatchId}`,
+            method: 'PUT'
+          },
+          delete: {
+            href: `/catch/${fishCatchId}`,
+            method: 'DELETE'
+          },
+          related: {
+            href: `/member/${memberId}`
+          }
+        }
+      }
+    ]
+  }
 }

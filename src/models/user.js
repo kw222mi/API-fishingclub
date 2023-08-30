@@ -5,20 +5,64 @@
  * @version 1.0.0
  */
 
+import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
+import validator from 'validator'
+
+const { isEmail } = validator
 
 // Create a schema.
 const userSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    minLength: [1, 'The firstName must be of minimum length 1 characters.'],
+    maxLength: [256, 'The firstName must be of maximum length 256 characters.'],
+    required: [true, 'First name is required.'],
+    trim: true
+  },
+  lastName: {
+    type: String,
+    minLength: [1, 'The lastName must be of minimum length 1 characters.'],
+    maxLength: [256, 'The lastName must be of maximum length 256 characters.'],
+    required: [true, 'Last name is required.'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'Email address is required.'],
+    maxLength: [254, 'The email must be of maximum length 256 characters.'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    validate: [isEmail, 'Please provide a valid email address.']
+  },
+  username: {
+    type: String,
+    required: [true, 'Username is required.'],
+    unique: true,
+    // - A valid username should start with an alphabet so, [A-Za-z].
+    // - All other characters can be alphabets, numbers or an underscore so, [A-Za-z0-9_-].
+    // - Since length constraint is 3-256 and we had already fixed the first character, so we give {2, 255}.
+    // - We use ^ and $ to specify the beginning and end of matching.
+    match: [/^[A-Za-z][A-Za-z0-9_-]{2,255}$/, 'Please provide a valid username.']
+  },
+  password: {
+    type: String,
+    minLength: [10, 'The password must be of minimum length 10 characters.'],
+    maxLength: [256, 'The password must be of maximum length 256 characters.'],
+    required: [true, 'Password is required.'],
+    writeOnly: true
+  },
   eventName: {
     type: String,
-    trim: true,
-    required: true
+    trim: true
+    // required: true
   },
 
   endpointUrl: {
     type: String,
-    trim: true,
-    required: true
+    trim: true
+    // required: true
   }
 }, {
   timestamps: true,
@@ -40,6 +84,30 @@ const userSchema = new mongoose.Schema({
 userSchema.virtual('id').get(function () {
   return this._id.toHexString()
 })
+
+// Salts and hashes password before save.
+userSchema.pre('save', async function () {
+  this.password = await bcrypt.hash(this.password, 10)
+})
+
+/**
+ * Authenticates a user.
+ *
+ * @param {string} username - ...
+ * @param {string} password - ...
+ * @returns {Promise<User>} ...
+ */
+userSchema.statics.authenticate = async function (username, password) {
+  const user = await this.findOne({ username })
+  console.log(user)
+  // If no user found or password is wrong, throw an error.
+  if (!(await bcrypt.compare(password, user?.password))) {
+    throw new Error('Invalid credentials.')
+  }
+  // User found and password correct, return the user.
+  console.log(user)
+  return user
+}
 
 // Create a model using the schema.
 export const User = mongoose.model('User', userSchema)
