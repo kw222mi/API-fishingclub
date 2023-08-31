@@ -21,7 +21,16 @@ export class MemberController {
    */
   async getMember (req, res, next) {
     try {
+      const page = parseInt(req.query.page) || 1 // Hämta sidan från queryparametern, default till 1
+      const perPage = parseInt(req.query.perPage) || 50 // Antal resultat per sida, default till 50
+
+      const totalMembers = await Member.countDocuments()
+      const totalPages = Math.ceil(totalMembers / perPage)
+
       const members = await Member.find()
+        .skip((page - 1) * perPage)
+        .limit(perPage)
+
       const membersWithLinks = members.map((member) => {
         return {
           ...member._doc,
@@ -61,9 +70,17 @@ export class MemberController {
         },
         _embedded: {
           members: membersWithLinks
+        },
+        pagination: {
+          currentPage: page,
+          totalPages,
+          perPage,
+          totalMembers
         }
       }
-      res.setHeader('Content-Type', 'application/json')
+
+      res
+        .setHeader('Content-Type', 'application/json')
         .status(200)
         .json(response)
     } catch (error) {

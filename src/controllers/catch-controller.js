@@ -24,8 +24,17 @@ export class CatchController {
    */
   async getCatch (req, res, next) {
     try {
+      const page = parseInt(req.query.page) || 1 // Hämta sidan från queryparametern, default till 1
+      const perPage = parseInt(req.query.perPage) || 50 // Antal resultat per sida, default till 50
+
+      const totalCatches = await Catch.countDocuments()
+      const totalPages = Math.ceil(totalCatches / perPage)
+
       const fishCatches = await Catch.find()
-      const fishCatchsWithLinks = fishCatches.map((fishCatch) => { // Använd aliaset fishCatch istället för catch
+        .skip((page - 1) * perPage)
+        .limit(perPage)
+
+      const fishCatchsWithLinks = fishCatches.map((fishCatch) => {
         return {
           ...fishCatch._doc,
           _links: {
@@ -35,10 +44,6 @@ export class CatchController {
             update: {
               href: `/catch/${fishCatch._id}`,
               method: 'PUT'
-            },
-            create: {
-              href: `/catch/${fishCatch._id}`,
-              method: 'POST'
             },
             delete: {
               href: `/catch/${fishCatch._id}`,
@@ -50,10 +55,40 @@ export class CatchController {
           }
         }
       })
+
+      const response = {
+        _links: {
+          self: {
+            href: '/catch'
+          },
+          create: {
+            href: '/catch',
+            method: 'POST'
+          },
+          update: {
+            href: '/catch',
+            method: 'PUT'
+          },
+          delete: {
+            href: '/catch',
+            method: 'DELETE'
+          }
+        },
+        _embedded: {
+          catch: fishCatchsWithLinks
+        },
+        pagination: {
+          currentPage: page,
+          totalPages,
+          perPage,
+          totalCatches
+        }
+      }
+
       res
         .setHeader('Content-Type', 'application/json')
         .status(200)
-        .json(fishCatchsWithLinks)
+        .json(response)
     } catch (error) {
       console.error('Database error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -289,13 +324,12 @@ export class CatchController {
    */
   async addWebhookEvent (req, res, next) {
     try {
-      const userId = req.params.userId
+      const userId = req.params.id
 
       const webhookEvent = {
         eventName: req.body.eventName,
         endpointUrl: req.body.endpointUrl
       }
-
       // Get the user by id
       const user = await User.findById(userId)
 

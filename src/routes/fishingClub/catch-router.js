@@ -59,7 +59,7 @@ const authenticateJWT = (req, res, next) => {
 
 // GET catch
 router.get('/',
-  authenticateJWT,
+  // authenticateJWT,
   (req, res, next) => controller.getCatch(req, res, next)
 )
 
