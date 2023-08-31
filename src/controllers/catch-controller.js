@@ -16,17 +16,6 @@ import axios from 'axios'
  */
 export class CatchController {
   /**
-   * Validate indata.
-   *
-   * @param {object} req - Express request object.
-   * @param {object} res - Express response object.
-   * @param {Function} next - Express next middleware function.
-   */
-  validateIndata (req, res, next) {
-    console.log('not implemented')
-  }
-
-  /**
    * Get all catches.
    *
    * @param {object} req - Express request object.
@@ -61,8 +50,10 @@ export class CatchController {
           }
         }
       })
-      res.setHeader('Content-Type', 'application/json')
-      res.json(fishCatchsWithLinks)
+      res
+        .setHeader('Content-Type', 'application/json')
+        .status(200)
+        .json(fishCatchsWithLinks)
     } catch (error) {
       console.error('Database error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -108,9 +99,11 @@ export class CatchController {
           }
         }
       }
-      res.setHeader('Content-Type', 'application/json')
-      res.setHeader('Last-Modified', `${fishCatch.updatedAt}`)
-      res.json(fishCatchWithLinks)
+      res
+        .setHeader('Content-Type', 'application/json')
+        .setHeader('Last-Modified', `${fishCatch.updatedAt}`)
+        .status(200)
+        .json(fishCatchWithLinks)
     } catch (error) {
       console.error('Database error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -195,10 +188,11 @@ export class CatchController {
           }
         }
       }
-      res.setHeader('Content-Type', 'application/json')
-      res.setHeader('Content-Location', `http://localhost:8080/fishing-club/catch/${newCatch._id}`)
-
-      res.status(201).json(newCatchWithLinks)
+      res
+        .setHeader('Content-Type', 'application/json')
+        .setHeader('Content-Location', `http://localhost:8080/fishing-club/catch/${newCatch._id}`)
+        .status(201)
+        .json(newCatchWithLinks)
     } catch (error) {
       console.error('Error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -232,6 +226,10 @@ export class CatchController {
           self: {
             href: `/catch/${fishCatch._id}`
           },
+          read: {
+            href: `/catch/${fishCatch._id}`,
+            method: 'GET'
+          },
           delete: {
             href: `/catch/${fishCatch._id}`,
             method: 'DELETE'
@@ -246,8 +244,10 @@ export class CatchController {
         }
       }
 
-      res.setHeader('Content-Type', 'application/json')
-      res.json(updatedCatchWithLinks) // Return the updated document along with links
+      res
+        .setHeader('Content-Type', 'application/json')
+        .status(200)
+        .json(updatedCatchWithLinks) // Return the updated document along with links
     } catch (error) {
       console.error('Error:', error)
       const httpError = createHttpError(500, 'Internal server error')

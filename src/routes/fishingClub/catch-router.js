@@ -7,7 +7,7 @@
 
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import createError from 'http-errors'
+import createHttpError from 'http-errors'
 import { CatchController } from '../../controllers/catch-controller.js'
 
 export const router = express.Router()
@@ -47,10 +47,9 @@ const authenticateJWT = (req, res, next) => {
     }
 
     next()
-  } catch (err) {
-    const error = createError(401)
-    error.cause = err
-    next(error)
+  } catch (error) {
+    const httpError = createHttpError(401, 'Unauthorized')
+    next(httpError)
   }
 }
 
@@ -66,6 +65,7 @@ router.get('/',
 
 // GET catch by id
 router.get('/:id',
+  authenticateJWT,
   (req, res, next) => controller.getCatchById(req, res, next)
 )
 
@@ -77,15 +77,16 @@ router.post('/',
 )
 
 router.put('/:id',
+  authenticateJWT,
   (req, res, next) => controller.changeCatch(req, res, next)
 )
 
 router.delete('/:id',
+  authenticateJWT,
   (req, res, next) => controller.deleteCatch(req, res, next)
 )
 
 router.post('/addWebhookEvent/:id',
-  // authenticateJWT,
-  // (req, res, next) => controller.validateIndata(req, res, next),
+  authenticateJWT,
   (req, res, next) => controller.addWebhookEvent(req, res, next)
 )
