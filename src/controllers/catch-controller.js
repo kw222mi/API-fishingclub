@@ -9,7 +9,7 @@
 import { Catch } from '../models/catch.js'
 import { User } from '../models/user.js'
 import createHttpError from 'http-errors'
-// bimport axios from 'axios'
+import axios from 'axios'
 
 /**
  * Encapsulates a controller.
@@ -36,8 +36,33 @@ export class CatchController {
   async getCatch (req, res, next) {
     try {
       const fishCatches = await Catch.find()
+      const fishCatchsWithLinks = fishCatches.map((fishCatch) => { // Använd aliaset fishCatch istället för catch
+        return {
+          ...fishCatch._doc,
+          _links: {
+            self: {
+              href: `/catch/${fishCatch._id}`
+            },
+            update: {
+              href: `/catch/${fishCatch._id}`,
+              method: 'PUT'
+            },
+            create: {
+              href: `/catch/${fishCatch._id}`,
+              method: 'POST'
+            },
+            delete: {
+              href: `/catch/${fishCatch._id}`,
+              method: 'DELETE'
+            },
+            related: {
+              href: `/member/${fishCatch.member}`
+            }
+          }
+        }
+      })
       res.setHeader('Content-Type', 'application/json')
-      res.json(fishCatches)
+      res.json(fishCatchsWithLinks)
     } catch (error) {
       console.error('Database error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -56,14 +81,36 @@ export class CatchController {
   async getCatchById (req, res, next) {
     try {
       const fishCatch = await Catch.findById(req.params.id)
-
       if (!fishCatch) {
         const notFoundError = createHttpError(404, 'Fish catch not found')
         return next(notFoundError)
       }
+      const fishCatchWithLinks = {
+        ...fishCatch._doc,
+        _links: {
+          self: {
+            href: `/catch/${fishCatch._id}`
+          },
+          update: {
+            href: `/catch/${fishCatch._id}`,
+            method: 'PUT'
+          },
+          delete: {
+            href: `/catch/${fishCatch._id}`,
+            method: 'DELETE'
+          },
+          create: {
+            href: '/catch ',
+            method: 'POST'
+          },
+          related: {
+            href: `/member/${fishCatch.member}`
+          }
+        }
+      }
       res.setHeader('Content-Type', 'application/json')
       res.setHeader('Last-Modified', `${fishCatch.updatedAt}`)
-      res.json(fishCatch)
+      res.json(fishCatchWithLinks)
     } catch (error) {
       console.error('Database error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -90,36 +137,68 @@ export class CatchController {
         length: req.body.length,
         image: req.body.image
       })
+
       await newCatch.save()
 
-      /*
-      // Get all users
+      // Get all the users from the database.
       const users = await User.find()
-      const webhookUrls = []
+
+      const newCatchEventData = {
+        eventName: 'newCatch',
+        catchData: newCatch // Create an object with the catch data.
+      }
+
+      // Loop throw the users and send the webhook-data if the user is signed up.
       for (const user of users) {
-        // Get users with newCatch event
-        if (user.eventName === 'newCatch') {
-          webhookUrls.push(user.endpointUrl)
+        for (const webhookEvent of user.webhookDetails) {
+          if (webhookEvent.eventName === 'newCatch') {
+            const webhookUrl = webhookEvent.endpointUrl
+
+            try {
+              const webhookResponse = await axios.post(webhookUrl, newCatchEventData, {
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+              console.log('Webhook response:', webhookResponse.data)
+            } catch (webhookError) {
+              console.error('Webhook Error:', webhookError)
+              // Continue the loop even if there is an error.
+              // This way, the data will be sent to as many users as possible and the recipients
+              // will be responsible for the error handling for their webhook requests.
+              continue
+            }
+          }
         }
       }
-      // Send to all webhooks in the list
-      for (const webhookUrl of webhookUrls) {
-        const webhookResponse = await axios.post(webhookUrl, newCatch, {
-          headers: {
-            'Content-Type': 'application/json'
+
+      const newCatchWithLinks = {
+        ...newCatch._doc,
+        _links: {
+          self: {
+            href: `/catch/${newCatch._id}`
+          },
+          update: {
+            href: `/catch/${newCatch._id}`,
+            method: 'PUT'
+          },
+          delete: {
+            href: `/catch/${newCatch._id}`,
+            method: 'DELETE'
+          },
+          create: {
+            href: '/catch ',
+            method: 'POST'
+          },
+          related: {
+            href: `/member/${newCatch.member}`
           }
-        })
-        console.log('Webhook response:', webhookResponse.data)
+        }
       }
-      */
-
-      console.log('saved' + newCatch)
       res.setHeader('Content-Type', 'application/json')
-      res.setHeader('Content-Location', `http://localhost:8080/fishing-club/catch${newCatch._id}`)
+      res.setHeader('Content-Location', `http://localhost:8080/fishing-club/catch/${newCatch._id}`)
 
-      res
-        .status(201)
-        .json(newCatch)
+      res.status(201).json(newCatchWithLinks)
     } catch (error) {
       console.error('Error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -138,14 +217,37 @@ export class CatchController {
   async changeCatch (req, res, next) {
     try {
       const fishCatch = await Catch.findById(req.params.id)
-      console.log(req.body)
+
       if (!fishCatch) {
         const notFoundError = createHttpError(404, 'Fish catch not found')
         return next(notFoundError)
       }
+
       Object.assign(fishCatch, req.body) // Update the document with data from req.body
       await fishCatch.save()
-      res.json(fishCatch)
+
+      const updatedCatchWithLinks = {
+        ...fishCatch._doc,
+        _links: {
+          self: {
+            href: `/catch/${fishCatch._id}`
+          },
+          delete: {
+            href: `/catch/${fishCatch._id}`,
+            method: 'DELETE'
+          },
+          create: {
+            href: '/catch ',
+            method: 'POST'
+          },
+          related: {
+            href: `/member/${fishCatch.member}`
+          }
+        }
+      }
+
+      res.setHeader('Content-Type', 'application/json')
+      res.json(updatedCatchWithLinks) // Return the updated document along with links
     } catch (error) {
       console.error('Error:', error)
       const httpError = createHttpError(500, 'Internal server error')
@@ -154,7 +256,7 @@ export class CatchController {
   }
 
   /**
-   * Delete a cattch document.
+   * Delete a catch document.
    *
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
@@ -183,55 +285,40 @@ export class CatchController {
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
+   * @returns {object} httpError
    */
   async addWebhookEvent (req, res, next) {
     try {
-      const newWebhookEvent = new User({
+      const userId = req.params.userId
+
+      const webhookEvent = {
         eventName: req.body.eventName,
         endpointUrl: req.body.endpointUrl
-      })
-      await newWebhookEvent.save()
-      console.log('saved' + newWebhookEvent)
+      }
+
+      // Get the user by id
+      const user = await User.findById(userId)
+
+      if (!user) {
+        const httpError = createHttpError(404, 'User not found')
+        return next(httpError)
+      }
+
+      // Add the new webhook event in the users webhookDetails-array
+      user.webhookDetails.push(webhookEvent)
+      await user.save()
+
+      console.log('saved', webhookEvent)
       res.setHeader('Content-Type', 'application/json')
-      res.setHeader('Content-Location', `http://localhost:8080/fishing-club/addWebhookEvent${newWebhookEvent._id}`)
+      res.setHeader('Content-Location', `http://localhost:8080/fishing-club/addWebhookEvent/${userId}`)
 
       res
         .status(201)
-        .json(newWebhookEvent)
+        .json(webhookEvent)
     } catch (error) {
       console.error('Error:', error)
       const httpError = createHttpError(500, 'Internal server error')
       next(httpError)
     }
-  }
-
-  /**
-   * Returns the links to include in fishCatch response.
-   *
-   * @param {string} fishCatchId - the id of the fishCatch
-   * @param {string} memberId - the id of the user
-   * @returns {Array} links
-   */
-  getFishCatchByIdLinks = (fishCatchId, memberId) => {
-    return [
-      {
-        _links: {
-          self: {
-            href: `/catch/${fishCatchId}`
-          },
-          update: {
-            href: `/catch/${fishCatchId}`,
-            method: 'PUT'
-          },
-          delete: {
-            href: `/catch/${fishCatchId}`,
-            method: 'DELETE'
-          },
-          related: {
-            href: `/member/${memberId}`
-          }
-        }
-      }
-    ]
   }
 }

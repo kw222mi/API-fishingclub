@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-// import createError from 'http-errors'
+import createHttpError from 'http-errors'
 import { Member } from '../models/member.js'
 
 /**
@@ -33,10 +33,38 @@ export class MemberController {
   async getMember (req, res, next) {
     try {
       const members = await Member.find()
+      const membersWithLinks = members.map((member) => {
+        return {
+          ...member._doc,
+          _links: {
+            self: {
+              href: `/member/${member._id}`
+            }
+            // Här kan du lägga till andra länkar relaterade till medlemmar om det är relevant
+          }
+        }
+      })
+
+      const response = {
+        _links: {
+          self: {
+            href: '/member'
+          },
+          create: {
+            href: '/member',
+            method: 'POST'
+          }
+        },
+        _embedded: {
+          members: membersWithLinks
+        }
+      }
       res.setHeader('Content-Type', 'application/json')
-      res.json(members)
+      res.json(response)
     } catch (error) {
-      next(error)
+      console.error('Database error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
     }
   }
 

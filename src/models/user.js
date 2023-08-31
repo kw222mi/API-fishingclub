@@ -53,17 +53,10 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required.'],
     writeOnly: true
   },
-  eventName: {
-    type: String,
-    trim: true
-    // required: true
-  },
-
-  endpointUrl: {
-    type: String,
-    trim: true
-    // required: true
-  }
+  webhookDetails: [{
+    eventName: String,
+    endpointUrl: String
+  }]
 }, {
   timestamps: true,
   toJSON: {
@@ -87,7 +80,11 @@ userSchema.virtual('id').get(function () {
 
 // Salts and hashes password before save.
 userSchema.pre('save', async function () {
-  this.password = await bcrypt.hash(this.password, 10)
+  try {
+    this.password = await bcrypt.hash(this.password, 10)
+  } catch (error) {
+    throw new Error('Password hashing failed.')
+  }
 })
 
 /**
@@ -98,15 +95,19 @@ userSchema.pre('save', async function () {
  * @returns {Promise<User>} ...
  */
 userSchema.statics.authenticate = async function (username, password) {
-  const user = await this.findOne({ username })
-  console.log(user)
-  // If no user found or password is wrong, throw an error.
-  if (!(await bcrypt.compare(password, user?.password))) {
-    throw new Error('Invalid credentials.')
+  try {
+    const user = await this.findOne({ username })
+    if (!user) {
+      throw new Error('User not found.')
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      throw new Error('Invalid credentials.')
+    }
+    return user
+  } catch (error) {
+    throw new Error('Authentication failed.')
   }
-  // User found and password correct, return the user.
-  console.log(user)
-  return user
 }
 
 // Create a model using the schema.

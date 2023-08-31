@@ -84,7 +84,7 @@ router.delete('/:id',
   (req, res, next) => controller.deleteCatch(req, res, next)
 )
 
-router.post('/addWebhookEvent',
+router.post('/addWebhookEvent/:id',
   // authenticateJWT,
   // (req, res, next) => controller.validateIndata(req, res, next),
   (req, res, next) => controller.addWebhookEvent(req, res, next)

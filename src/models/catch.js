@@ -15,11 +15,10 @@ const schema = new mongoose.Schema({
   },
   lakeName: {
     type: String,
-    maxLength: [256, 'The lakename must be of maximum length 256 characters.'],
+    maxLength: [256, 'The lake name must be at most 256 characters.'],
     trim: true,
-    minlength: [1, 'The lakename must be of minimum length 1 characters.']
+    minlength: [1, 'The lake name must be at least 1 character.']
   },
-
   cityName: {
     type: String,
     required: [true, 'cityname is required.'],
@@ -33,13 +32,27 @@ const schema = new mongoose.Schema({
   },
   coordinates: {
     type: [Number, Number],
-    index: '2d'
+    index: '2d',
+    validate: {
+      /**
+       * Function for validating of coordinates.
+       *
+       * @param {number} val - number to validate
+       * @returns {boolean} - true if valid
+       */
+      validator: function (val) {
+        return Array.isArray(val) && val.length === 2 && typeof val[0] === 'number' && typeof val[1] === 'number'
+      },
+      message: 'Coordinates should be an array of two numbers.'
+    }
   },
   weight: {
-    type: Number
+    type: Number,
+    min: [0, 'Weight must be a positive number.']
   },
   length: {
-    type: Number
+    type: Number,
+    min: [0, 'Length must be a positive number.']
   },
   image: {
     type: String
