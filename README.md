@@ -1,4 +1,4 @@
-# Hur man testar dettaa API
+# Hur man testar detta API
 
 Detta API är driftsatt här: [https://cscloud8-26.lnu.se/api](https://cscloud8-26.lnu.se/api)
 
