@@ -36,14 +36,14 @@ export class MemberController {
           ...member._doc,
           _links: {
             self: {
-              href: `/member/${member._id}`
+              href: `/fishing-club/member/${member._id}`
             },
             update: {
-              href: `/member/${member._id}`,
+              href: `/fishing-club/member/${member._id}`,
               method: 'PUT'
             },
             delete: {
-              href: `/member/${member._id}`,
+              href: `/fishing-club/member/${member._id}`,
               method: 'DELETE'
             }
           }
@@ -53,18 +53,18 @@ export class MemberController {
       const response = {
         _links: {
           self: {
-            href: '/member'
+            href: '/fishing-club/member'
           },
           create: {
-            href: '/member',
+            href: '/fishing-club/member',
             method: 'POST'
           },
           update: {
-            href: '/member',
+            href: '/fishing-club/member',
             method: 'PUT'
           },
           delete: {
-            href: '/member',
+            href: '/fishing-club/member',
             method: 'DELETE'
           }
         },
@@ -109,18 +109,18 @@ export class MemberController {
         ...member._doc,
         _links: {
           self: {
-            href: `/member/${member._id}`
+            href: `/fishing-club/member/${member._id}`
           },
           update: {
-            href: `/member/${member._id}`,
+            href: `/fishing-club/member/${member._id}`,
             method: 'PUT'
           },
           delete: {
-            href: `/member/${member._id}`,
+            href: `/fishing-club/member/${member._id}`,
             method: 'DELETE'
           },
           create: {
-            href: '/member',
+            href: '/fishing-club/member',
             method: 'POST'
           }
         }
@@ -157,18 +157,18 @@ export class MemberController {
         ...newMember._doc,
         _links: {
           self: {
-            href: `/member/${newMember._id}`
+            href: `/fishing-club/member/${newMember._id}`
           },
           read: {
-            href: `/member/${newMember._id}`,
+            href: `/fishing-club/member/${newMember._id}`,
             method: 'GET'
           },
           update: {
-            href: `/member/${newMember._id}`,
+            href: `/fishing-club/member/${newMember._id}`,
             method: 'PUT'
           },
           delete: {
-            href: `/member/${newMember._id}`,
+            href: `/fishing-club/member/${newMember._id}`,
             method: 'DELETE'
           }
         }
@@ -208,18 +208,18 @@ export class MemberController {
         ...member._doc,
         _links: {
           self: {
-            href: `/member/${member._id}`
+            href: `/fishing-club/member/${member._id}`
           },
           read: {
-            href: `/member/${member._id}`,
+            href: `/fishing-club/member/${member._id}`,
             method: 'GET'
           },
           delete: {
-            href: `/member/${member._id}`,
+            href: `/fishing-club/member/${member._id}`,
             method: 'DELETE'
           },
           create: {
-            href: '/member',
+            href: '/fishing-club/member',
             method: 'POST'
           }
         }

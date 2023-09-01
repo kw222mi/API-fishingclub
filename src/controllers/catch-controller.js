@@ -39,18 +39,18 @@ export class CatchController {
           ...fishCatch._doc,
           _links: {
             self: {
-              href: `/catch/${fishCatch._id}`
+              href: `/fishing-club/catch/${fishCatch._id}`
             },
             update: {
-              href: `/catch/${fishCatch._id}`,
+              href: `/fishing-club/catch/${fishCatch._id}`,
               method: 'PUT'
             },
             delete: {
-              href: `/catch/${fishCatch._id}`,
+              href: `/fishing-club/catch/${fishCatch._id}`,
               method: 'DELETE'
             },
             related: {
-              href: `/member/${fishCatch.member}`
+              href: `/fishing-club/member/${fishCatch.member}`
             }
           }
         }
@@ -59,18 +59,18 @@ export class CatchController {
       const response = {
         _links: {
           self: {
-            href: '/catch'
+            href: '/fishing-club/catch'
           },
           create: {
-            href: '/catch',
+            href: '/fishing-club/catch',
             method: 'POST'
           },
           update: {
-            href: '/catch',
+            href: '/fishing-club/catch',
             method: 'PUT'
           },
           delete: {
-            href: '/catch',
+            href: '/fishing-club/catch',
             method: 'DELETE'
           }
         },
@@ -115,22 +115,22 @@ export class CatchController {
         ...fishCatch._doc,
         _links: {
           self: {
-            href: `/catch/${fishCatch._id}`
+            href: `/fishing-club/catch/${fishCatch._id}`
           },
           update: {
-            href: `/catch/${fishCatch._id}`,
+            href: `/fishing-club/catch/${fishCatch._id}`,
             method: 'PUT'
           },
           delete: {
-            href: `/catch/${fishCatch._id}`,
+            href: `/fishing-club/catch/${fishCatch._id}`,
             method: 'DELETE'
           },
           create: {
-            href: '/catch ',
+            href: '/fishing-club/catch',
             method: 'POST'
           },
           related: {
-            href: `/member/${fishCatch.member}`
+            href: `/fishing-club/member/${fishCatch.member}`
           }
         }
       }
@@ -154,6 +154,7 @@ export class CatchController {
    * @param {Function} next - Express next middleware function.
    */
   async createCatch (req, res, next) {
+    console.log(req.body.member)
     try {
       const newCatch = new Catch({
         member: req.body.memberId,
@@ -167,6 +168,7 @@ export class CatchController {
       })
 
       await newCatch.save()
+      console.log(newCatch)
 
       // Get all the users from the database.
       const users = await User.find()
@@ -204,22 +206,22 @@ export class CatchController {
         ...newCatch._doc,
         _links: {
           self: {
-            href: `/catch/${newCatch._id}`
+            href: `/fishing-club/catch/${newCatch._id}`
           },
           update: {
-            href: `/catch/${newCatch._id}`,
+            href: `/fishing-club/catch/${newCatch._id}`,
             method: 'PUT'
           },
           delete: {
-            href: `/catch/${newCatch._id}`,
+            href: `/fishing-club/catch/${newCatch._id}`,
             method: 'DELETE'
           },
           create: {
-            href: '/catch ',
+            href: '/fishing-club/catch ',
             method: 'POST'
           },
           related: {
-            href: `/member/${newCatch.member}`
+            href: `/fishing-club/member/${newCatch.member}`
           }
         }
       }
@@ -259,22 +261,22 @@ export class CatchController {
         ...fishCatch._doc,
         _links: {
           self: {
-            href: `/catch/${fishCatch._id}`
+            href: `/fishing-club/catch/${fishCatch._id}`
           },
           read: {
-            href: `/catch/${fishCatch._id}`,
+            href: `/fishing-club/catch/${fishCatch._id}`,
             method: 'GET'
           },
           delete: {
-            href: `/catch/${fishCatch._id}`,
+            href: `/fishing-club/catch/${fishCatch._id}`,
             method: 'DELETE'
           },
           create: {
-            href: '/catch ',
+            href: '/fishing-club/catch ',
             method: 'POST'
           },
           related: {
-            href: `/member/${fishCatch.member}`
+            href: `/fishing-club/member/${fishCatch.member}`
           }
         }
       }
@@ -366,7 +368,7 @@ export class CatchController {
    */
   async deleteWebhookEvent (req, res, next) {
     try {
-      const userId = req.params.userId
+      const userId = req.params.id
       const eventName = req.params.eventName
 
       // Update the user by removing the webhook for given event

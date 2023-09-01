@@ -11,7 +11,8 @@ import mongoose from 'mongoose'
 const schema = new mongoose.Schema({
   member: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Member'
+    ref: 'Member',
+    required: [true, 'Member is required.']
   },
   lakeName: {
     type: String,
@@ -28,7 +29,8 @@ const schema = new mongoose.Schema({
   },
   species: {
     type: String,
-    trim: true
+    trim: true,
+    required: [true, 'Species is required.']
   },
   coordinates: {
     type: [Number, Number],
@@ -53,9 +55,6 @@ const schema = new mongoose.Schema({
   length: {
     type: Number,
     min: [0, 'Length must be a positive number.']
-  },
-  image: {
-    type: String
   }
 }, {
   timestamps: true,

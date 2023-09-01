@@ -6,6 +6,9 @@
  */
 
 import mongoose from 'mongoose'
+import validator from 'validator'
+
+const { isEmail } = validator
 
 // Create a schema.
 const memberSchema = new mongoose.Schema({
@@ -13,19 +16,25 @@ const memberSchema = new mongoose.Schema({
     type: String,
     maxLength: [256, 'The firstName must be of maximum length 256 characters.'],
     trim: true,
-    minlength: [1, 'The firstname must be of minimum length 1 characters.']
+    minlength: [1, 'The firstname must be of minimum length 1 characters.'],
+    required: [true, 'FirstName is required.']
   },
 
   lastName: {
     type: String,
     maxLength: [256, 'The lastName must be of maximum length 256 characters.'],
     trim: true,
-    minlength: [1, 'The lastName must be of minimum length 1 characters.']
+    minlength: [1, 'The lastName must be of minimum length 1 characters.'],
+    required: [true, 'lastName is required.']
   },
   email: {
     type: String,
+    required: [true, 'Email address is required.'],
+    maxLength: [254, 'The email must be of maximum length 256 characters.'],
     unique: true,
-    required: [true, 'Email is required.']
+    lowercase: true,
+    trim: true,
+    validate: [isEmail, 'Please provide a valid email address.']
   }
 }, {
   timestamps: true,

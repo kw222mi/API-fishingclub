@@ -7,7 +7,7 @@
 
 // import createError from 'http-errors'
 import jwt from 'jsonwebtoken'
-import createError from 'http-errors'
+import createHttpError from 'http-errors'
 import { User } from '../models/user.js'
 
 /**
@@ -42,25 +42,15 @@ export class AccountController {
         expiresIn: process.env.ACCESS_TOKEN_LIFE
       })
 
-      // // Create the refresh token with the longer lifespan.
-      // -----------------------------------------------------------------
-      // 👉👉👉 This is the place to create and handle the refresh token!
-      //         Quite a lot of additional implementation is required!!!
-      // -----------------------------------------------------------------
-      // const refreshToken = ...
-
       res
-        .status(201)
+        .status(200)
         .json({
           access_token: accessToken
-          // refresh_token: refreshToken
         })
     } catch (error) {
       // Authentication failed.
-      const err = createError(401, 'Access token invalid or not provided')
-      err.cause = error
-
-      next(err)
+      const httpError = createHttpError(401, 'Unathorized')
+      next(httpError)
     }
   }
 
@@ -87,16 +77,16 @@ export class AccountController {
         .status(201)
         .json({ id: user.id })
     } catch (error) {
-      let err = error
+      const err = error
 
       if (err.code === 11000) {
         // Duplicated keys.
-        err = createError(409)
-        err.cause = error
+        const httpError = createHttpError(409, 'Conflict')
+        next(httpError)
       } else if (error.name === 'ValidationError') {
         // Validation error(s).
-        err = createError(400)
-        err.cause = error
+        const httpError = createHttpError(400, 'Bad request')
+        next(httpError)
       }
 
       next(err)

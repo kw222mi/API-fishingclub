@@ -29,6 +29,9 @@ const authenticateJWT = (req, res, next) => {
   try {
     const [authenticationScheme, token] = req.headers.authorization?.split(' ')
 
+    console.log(authenticationScheme)
+    console.log(token)
+
     if (authenticationScheme !== 'Bearer') {
       throw new Error('Invalid authentication scheme.')
     }
@@ -39,12 +42,14 @@ const authenticateJWT = (req, res, next) => {
     const originalPublicKey = process.env.PUBLIC_KEY.replace(/\\n/g, '\n')
 
     const payload = jwt.verify(token, originalPublicKey, verifyOptions)
+    console.log('payload.given_name')
     req.user = {
       username: payload.sub,
       firstName: payload.given_name,
       lastName: payload.family_name,
       email: payload.email
     }
+    console.log(payload.given_name)
 
     next()
   } catch (error) {

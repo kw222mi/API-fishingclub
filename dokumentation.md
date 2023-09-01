@@ -2,7 +2,7 @@
 
 This document provides information about the endpoints available in the API.
 
-The base URL for this API is https://cscloud8-26.lnu.se/api/fishing-club
+The base URL for this API is https://cscloud8-26.lnu.se/api
 
 ## Catch Endpoints
 
@@ -28,7 +28,16 @@ The base URL for this API is https://cscloud8-26.lnu.se/api/fishing-club
 
 - Description: Create a new catch.
 - Authentication: Requires authentication.
-- Example: Create a new catch.
+- Parameters:
+  - `memberId` (required): The id of the member who caught the fish.
+  - `lakeName` (optional): The name of the lake or river.
+  - `cityName`(required): The name of the area or nearest city.
+  - `species` (required): The species of the fish.
+  - `coordinates`(optional): Coordinates for the catch, should be an array with 2 numbers.
+  - `weight` (optional): The weight of the fish.
+  - `length` (optional): The length of the fish.
+  
+
 
 ### PUT /catch/:id
 
@@ -48,13 +57,14 @@ The base URL for this API is https://cscloud8-26.lnu.se/api/fishing-club
 - Description: Add a webhook event to a get data sent when a new catch is added. 
 - Authentication: Requires authentication.
 - Example: Add a webhook event to a user.
-- Request: `POST /catch/addWebhookEvent/{userId}`
-```json
-{
-    "eventName" : "newCatch",
-    "endpointUrl" : "https://examplepage/webhook"
-}
-```
+- Parameters:
+
+Send in json format in the body:
+- `eventName` (required): The name of the webhook event. 
+   - Possible events:  `newCatch` : a new catch is added.
+- `endpointUrl`(required): The URL where the data should be sent.
+
+
 ### DELETE DELETE /catch/removeWebhookEvent/:userId/:eventName
 
 - Description: This endpoint allows users to remove a webhook event from their account.
@@ -88,7 +98,11 @@ The base URL for this API is https://cscloud8-26.lnu.se/api/fishing-club
 
 - Description: Create a new member.
 - Authentication: Requires authentication.
-- Example: Create a new member.
+- Parameters:
+  - `firstName` (required): The first name of the member.
+  - `lastName` (required): The last name of the member.
+  - `email` (required): The email (has to be unique)
+
 
 ### PUT /member/:id
 
