@@ -1,0 +1,675 @@
+{
+	"info": {
+		"_postman_id": "29ff92ba-6441-4556-b53d-c71ed618a15d",
+		"name": "LNU fishingClub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13667923"
+	},
+	"item": [
+		{
+			"name": "Register user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\":\"Ellen\",\r\n    \"lastName\":\"Nu\",\r\n    \"email\":\"ellennu7@gmail.com\",\r\n    \"username\":\"lnu777lnu\",\r\n    \"password\":\"Hello123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/register",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register user with email and username that already exist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\":\"Ellen\",\r\n    \"lastName\":\"Nu\",\r\n    \"email\":\"ellennu4@gmail.com\",\r\n    \"username\":\"lnu444lnu\",\r\n    \"password\":\"Hello123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/register",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"pm.environment.set(\"TOKEN\", response.access_token)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"username\":\"lnu222lnu\",\r\n    \"password\":\"Hello123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/login",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user with wrong password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"username\":\"lnu222lnu\",\r\n    \"password\":\"Hello12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/login",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create member",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"pm.environment.set(\"MEMBER_ID\", response._id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Sven\",\r\n    \"lastName\":\"Svensson\",\r\n    \"email\": \"svenne@mail.com\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/member",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"member"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get member by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Lars\",\r\n    \"lastName\":\"Larsson\",\r\n    \"email\": \"lasse@mail.com\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/member/{{MEMBER_ID}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"member",
+						"{{MEMBER_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get member by non existing id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Lars\",\r\n    \"lastName\":\"Larsson\",\r\n    \"email\": \"lasse@mail.com\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/member/5252545",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"member",
+						"5252545"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update member",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Kalle\",\r\n    \"lastName\":\"Bengtsson\",\r\n    \"email\": \"kalle@mail.com\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/member/64f1dd72bccd21fc58b8fb2d",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"member",
+						"64f1dd72bccd21fc58b8fb2d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete member",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Lars\",\r\n    \"lastName\":\"Larsson\",\r\n    \"email\": \"lasse@mail.com\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/member/{{MEMBER_ID}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"member",
+						"{{MEMBER_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create catch",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"pm.environment.set(\"CATCH_ID\", response._id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"memberId\": \"64f1dd72bccd21fc58b8fb2d\",\r\n    \"lakeName\":\"Långsjön\",\r\n    \"cityName\": \"Norrtälje\",\r\n    \"species\": \"Gädda\",\r\n    \"coordinates\": [55, 105.4444],\r\n    \"weight\": 1005,\r\n    \"length\": 120\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all catches",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get resourse not logged in",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get catch by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch/64f205f869e164f66ce6c2dc",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch",
+						"64f205f869e164f66ce6c2dc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update catch",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"lakeName\":\"Storsjön\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch/{{CATCH_ID}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch",
+						"{{CATCH_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete catch",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch/{{CATCH_ID}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch",
+						"{{CATCH_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Catch not found",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch/{{CATCH_ID}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch",
+						"{{CATCH_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create webhook",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"eventName\": \"newCatch\",\r\n    \"endpointUrl\": \"http//:example/webhook\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch/addWebhookEvent/64f2241d69e164f66ce6c2f7",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch",
+						"addWebhookEvent",
+						"64f2241d69e164f66ce6c2f7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete webhook",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"eventName\": \"newCatch\",\r\n    \"endpointUrl\": \"http//:example/webhook\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/fishing-club/catch/addWebhookEvent/64f2241d69e164f66ce6c2f7/newCatch",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"fishing-club",
+						"catch",
+						"addWebhookEvent",
+						"64f2241d69e164f66ce6c2f7",
+						"newCatch"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
