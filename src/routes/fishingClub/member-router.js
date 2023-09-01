@@ -6,8 +6,8 @@
  */
 
 import express from 'express'
-// import jwt from 'jsonwebtoken'
-// import createError from 'http-errors'
+import jwt from 'jsonwebtoken'
+import createHttpError from 'http-errors'
 import { MemberController } from '../../controllers/member-controller.js'
 
 export const router = express.Router()
@@ -25,8 +25,6 @@ const controller = new MemberController()
  * @param {object} res - Express response object.
  * @param {Function} next - Express next middleware function.
  */
-
-/*
 const authenticateJWT = (req, res, next) => {
   try {
     const [authenticationScheme, token] = req.headers.authorization?.split(' ')
@@ -49,46 +47,40 @@ const authenticateJWT = (req, res, next) => {
     }
 
     next()
-  } catch (err) {
-    const error = createError(401)
-    error.cause = err
-    next(error)
+  } catch (error) {
+    const httpError = createHttpError(401, 'Unauthorized')
+    next(httpError)
   }
 }
-*/
 
 // ------------------------------------------------------------------------------
 //  Routes
 // ------------------------------------------------------------------------------
 
-/*
-router.get('/user',
-  authenticateJWT,
-  (req, res, next) => controller.getUser(req, res, next)
-)
-*/
-
 // GET member
 router.get('/',
+  authenticateJWT,
   (req, res, next) => controller.getMember(req, res, next)
 )
 
 // GET member by id
 router.get('/:id',
+  authenticateJWT,
   (req, res, next) => controller.getMemberById(req, res, next)
 )
 
 // POST member
 router.post('/',
-  // authenticateJWT,
-  // (req, res, next) => controller.validateIndata(req, res, next),
+  authenticateJWT,
   (req, res, next) => controller.createMember(req, res, next, req.user)
 )
 
 router.put('/:id',
+  authenticateJWT,
   (req, res, next) => controller.changeMember(req, res, next, req.user)
 )
 
 router.delete('/:id',
+  authenticateJWT,
   (req, res, next) => controller.deleteMember(req, res, next, req.user)
 )

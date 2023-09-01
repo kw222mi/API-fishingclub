@@ -59,7 +59,7 @@ const authenticateJWT = (req, res, next) => {
 
 // GET catch
 router.get('/',
-  // authenticateJWT,
+  authenticateJWT,
   (req, res, next) => controller.getCatch(req, res, next)
 )
 
@@ -72,7 +72,6 @@ router.get('/:id',
 // POST catch
 router.post('/',
   authenticateJWT,
-  // (req, res, next) => controller.validateIndata(req, res, next),
   (req, res, next) => controller.createCatch(req, res, next)
 )
 
@@ -89,4 +88,9 @@ router.delete('/:id',
 router.post('/addWebhookEvent/:id',
   authenticateJWT,
   (req, res, next) => controller.addWebhookEvent(req, res, next)
+)
+
+router.delete('/addWebhookEvent/:id/:eventName',
+  authenticateJWT,
+  (req, res, next) => controller.deleteWebhookEvent(req, res, next)
 )

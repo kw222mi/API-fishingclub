@@ -355,4 +355,37 @@ export class CatchController {
       next(httpError)
     }
   }
+
+  /**
+   * Remove a webhook event.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {object} - error
+   */
+  async deleteWebhookEvent (req, res, next) {
+    try {
+      const userId = req.params.userId
+      const eventName = req.params.eventName
+
+      // Update the user by removing the webhook for given event
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { webhookDetails: { eventName } } },
+        { new: true } // Return the updated dokument
+      )
+
+      if (!updatedUser) {
+        const httpError = createHttpError(404, 'User not found')
+        return next(httpError)
+      }
+
+      res.status(204).send()
+    } catch (error) {
+      console.error('Error:', error)
+      const httpError = createHttpError(500, 'Internal server error')
+      next(httpError)
+    }
+  }
 }
