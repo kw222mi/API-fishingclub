@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-// import createError from 'http-errors'
 import jwt from 'jsonwebtoken'
 import createHttpError from 'http-errors'
 import { User } from '../models/user.js'
@@ -23,9 +22,8 @@ export class AccountController {
    */
   async login (req, res, next) {
     try {
-      console.log(req.body.username, req.body.password)
       const user = await User.authenticate(req.body.username, req.body.password)
-      console.log(user)
+
       const payload = {
         sub: user.username,
         given_name: user.firstName,

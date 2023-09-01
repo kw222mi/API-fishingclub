@@ -21,8 +21,8 @@ export class MemberController {
    */
   async getMember (req, res, next) {
     try {
-      const page = parseInt(req.query.page) || 1 // Hämta sidan från queryparametern, default till 1
-      const perPage = parseInt(req.query.perPage) || 50 // Antal resultat per sida, default till 50
+      const page = parseInt(req.query.page) || 1 // Get the page from query param, default 1
+      const perPage = parseInt(req.query.perPage) || 50 // Number of documents per page, default 50
 
       const totalMembers = await Member.countDocuments()
       const totalPages = Math.ceil(totalMembers / perPage)

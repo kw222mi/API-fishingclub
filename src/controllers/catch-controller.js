@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-// import createError from 'http-errors'
 import { Catch } from '../models/catch.js'
 import { User } from '../models/user.js'
 import createHttpError from 'http-errors'
@@ -24,8 +23,8 @@ export class CatchController {
    */
   async getCatch (req, res, next) {
     try {
-      const page = parseInt(req.query.page) || 1 // Hämta sidan från queryparametern, default till 1
-      const perPage = parseInt(req.query.perPage) || 50 // Antal resultat per sida, default till 50
+      const page = parseInt(req.query.page) || 1 // Get the page from query param, default 1
+      const perPage = parseInt(req.query.perPage) || 50 // Number of results per page, default 50
 
       const totalCatches = await Catch.countDocuments()
       const totalPages = Math.ceil(totalCatches / perPage)
@@ -154,7 +153,6 @@ export class CatchController {
    * @param {Function} next - Express next middleware function.
    */
   async createCatch (req, res, next) {
-    console.log(req.body.member)
     try {
       const newCatch = new Catch({
         member: req.body.memberId,
@@ -168,7 +166,6 @@ export class CatchController {
       })
 
       await newCatch.save()
-      console.log(newCatch)
 
       // Get all the users from the database.
       const users = await User.find()
@@ -344,7 +341,6 @@ export class CatchController {
       user.webhookDetails.push(webhookEvent)
       await user.save()
 
-      console.log('saved', webhookEvent)
       res.setHeader('Content-Type', 'application/json')
       res.setHeader('Content-Location', `http://localhost:8080/fishing-club/addWebhookEvent/${userId}`)
 
